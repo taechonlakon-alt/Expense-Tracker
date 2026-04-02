@@ -77,7 +77,7 @@ export default function Home() {
           {loading ? (
             <div className="h-12 w-64 animate-shimmer rounded-xl" />
           ) : (
-            <div className={`text-[3.25rem] leading-none font-extrabold tracking-tight transition-colors duration-500 ${balance >= 0 ? 'text-[#42646D]' : 'text-[#A34E42]'}`}>
+            <div className={`text-6xl md:text-7xl leading-none font-extrabold tracking-tight transition-colors duration-500 py-2 ${balance >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
               ฿{balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
           )}
@@ -98,26 +98,26 @@ export default function Home() {
       <div className="grid grid-cols-2 gap-4 my-2 px-2">
         <button 
           onClick={() => handleOpenModal("income")}
-          className="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-[#719AA8] to-[#99B6C3] p-6 text-white text-center shadow-sm transition-transform hover:scale-[1.02] active:scale-[0.98] h-44 flex flex-col items-center justify-center"
+          className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-emerald-500 to-emerald-400 p-6 text-white text-center shadow-sm transition-transform hover:scale-[1.02] active:scale-[0.98] h-52 flex flex-col items-center justify-center"
         >
-          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-[#719AA8] shadow-sm mb-4 mx-auto">
-            <Plus className="h-6 w-6 stroke-[3]" />
+          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/20 blur-2xl" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-emerald-600 shadow-sm mb-4 mx-auto">
+            <Plus className="h-8 w-8 stroke-[3]" />
           </div>
-          <h3 className="text-[1.15rem] font-bold text-center w-full">เพิ่มรายรับ</h3>
-          <p className="text-[11px] font-medium text-white/90 mt-1 text-center w-full">บันทึกเงินที่ได้รับเข้ามา</p>
+          <h3 className="text-2xl font-bold text-center w-full">เพิ่มรายรับ</h3>
+          <p className="text-sm font-medium text-white/90 mt-1 text-center w-full">บันทึกเงินที่ได้</p>
         </button>
 
         <button 
           onClick={() => handleOpenModal("expense")}
-          className="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-[#E6E8DB] to-[#F1F3EB] p-6 text-slate-700 text-center shadow-sm transition-transform hover:scale-[1.02] active:scale-[0.98] h-44 flex flex-col items-center justify-center"
+          className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-500 to-rose-400 p-6 text-white text-center shadow-sm transition-transform hover:scale-[1.02] active:scale-[0.98] h-52 flex flex-col items-center justify-center"
         >
-          <div className="absolute -left-8 -bottom-8 h-32 w-32 rounded-full bg-[#C5D0B9]/30 blur-2xl" />
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#A34E42] text-white shadow-sm mb-4 mx-auto">
-            <Minus className="h-6 w-6 stroke-[3]" />
+          <div className="absolute -left-8 -bottom-8 h-32 w-32 rounded-full bg-white/20 blur-2xl" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-rose-600 shadow-sm mb-4 mx-auto">
+            <Minus className="h-8 w-8 stroke-[3]" />
           </div>
-          <h3 className="text-[1.15rem] font-bold text-center w-full">เพิ่มรายจ่าย</h3>
-          <p className="text-[11px] font-medium text-slate-500 mt-1 text-center w-full">บันทึกการใช้จ่ายของคุณ</p>
+          <h3 className="text-2xl font-bold text-center w-full">เพิ่มรายจ่าย</h3>
+          <p className="text-sm font-medium text-white/90 mt-1 text-center w-full">บันทึกใช้จ่าย</p>
         </button>
       </div>
 
@@ -150,22 +150,22 @@ export default function Home() {
               description="เริ่มต้นบันทึกรายรับรายจ่ายของคุณ ด้วยการกดปุ่มด้านบนเลย!" 
             />
           ) : recent.map((t, index) => (
-            <div key={t.id} className={`flex items-center justify-between rounded-3xl bg-white p-4 px-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-slate-50 transition-all hover:shadow-md opacity-0 animate-slide-up stagger-${Math.min(index + 1, 5)}`}>
+            <div key={t.id} className={`flex items-center justify-between rounded-3xl bg-white p-5 px-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-slate-50 transition-all hover:shadow-md opacity-0 animate-slide-up stagger-${Math.min(index + 1, 5)}`}>
               <div className="flex items-center gap-4">
-                <div className={`flex h-12 w-12 items-center justify-center rounded-full ${t.type === 'income' ? 'bg-[#EAF0F6] text-[#42646D]' : 'bg-[#EEF2F0] text-slate-600'}`}>
+                <div className={`flex h-14 w-14 items-center justify-center rounded-full ${t.type === 'income' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
                   {getCategoryIcon(t.type, t.category)}
                 </div>
                 <div>
-                  <p className="font-bold text-slate-800">{t.note || t.category}</p>
-                  <p className="text-xs font-medium text-slate-400 mt-0.5">{dayjs(t.transactionDate).format('DD MMM HH:mm น.')} • {t.category}</p>
+                  <p className="font-bold text-lg text-slate-800">{t.note || t.category}</p>
+                  <p className="text-sm font-medium text-slate-400 mt-0.5">{dayjs(t.transactionDate).format('DD MMM HH:mm น.')} • {t.category}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <div className="text-right">
-                  <p className={`font-bold text-lg ${t.type === 'income' ? 'text-[#42646D]' : 'text-[#A34E42]'}`}>
+                  <p className={`font-bold text-2xl ${t.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}`}>
                     {t.type === 'income' ? '+' : '-'}฿{t.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}
                   </p>
-                  <span className={`inline-block mt-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${t.type === 'income' ? 'bg-[#E5F3F7] text-[#42646D]' : 'bg-[#FCEAEA] text-[#A34E42]'}`}>
+                  <span className={`inline-block mt-1 rounded-full px-3 py-1 text-xs font-bold ${t.type === 'income' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
                     {t.category}
                   </span>
                 </div>

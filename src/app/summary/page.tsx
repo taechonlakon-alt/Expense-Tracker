@@ -82,8 +82,8 @@ export default function SummaryPage() {
       <div className="space-y-6 px-1">
         <div className="flex items-center justify-between">
           <div className="mt-2">
-            <h1 className="text-2xl font-extrabold text-[#365058]">สรุปผล</h1>
-            <p className="text-[11px] font-medium text-slate-500 mt-1 tracking-tight">ภาพรวมการเงินของคุณ</p>
+            <h1 className="text-3xl lg:text-4xl font-extrabold text-[#365058]">สรุปผล</h1>
+            <p className="text-sm font-medium text-slate-500 mt-1 tracking-tight">ภาพรวมการเงินของคุณ</p>
           </div>
           <div className="flex bg-[#F2F0E9] rounded-full p-1 shadow-inner border border-slate-100">
             {(["day", "month", "year"] as FilterType[]).map(f => (
@@ -135,50 +135,50 @@ export default function SummaryPage() {
           <div className="space-y-4 my-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-white rounded-[1.75rem] p-5 shadow-[0_2px_15px_rgba(0,0,0,0.02)] border border-white relative overflow-hidden">
-                <div className="absolute -left-4 -top-4 w-20 h-20 bg-[#EAF0F6] rounded-full blur-2xl opacity-70" />
+                <div className="absolute -left-4 -top-4 w-20 h-20 bg-emerald-50 rounded-full blur-2xl opacity-70" />
                 <div className="flex items-center gap-2 mb-3 relative z-10">
-                  <div className="bg-[#BCE3FB] p-2 rounded-full text-[#42646D]">
-                    <Banknote className="h-4 w-4 stroke-[2.5]" />
+                  <div className="bg-emerald-100 p-2 rounded-full text-emerald-600">
+                    <Banknote className="h-5 w-5 stroke-[2.5]" />
                   </div>
-                  <span className="text-xs font-bold text-slate-600">รายรับ</span>
+                  <span className="text-sm font-bold text-slate-600">รายรับ</span>
                 </div>
-                <div className="text-[1.35rem] font-bold text-[#42646D] relative z-10">
+                <div className="text-2xl lg:text-3xl font-bold text-emerald-600 relative z-10">
                   ฿ {data.totalIncome.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </div>
               </div>
               <div className="bg-white rounded-[1.75rem] p-5 shadow-[0_2px_15px_rgba(0,0,0,0.02)] border border-white relative overflow-hidden">
-                <div className="absolute -right-4 -top-4 w-20 h-20 bg-[#FCEAEA] rounded-full blur-2xl opacity-70" />
+                <div className="absolute -right-4 -top-4 w-20 h-20 bg-rose-50 rounded-full blur-2xl opacity-70" />
                 <div className="flex items-center gap-2 mb-3 relative z-10">
-                  <div className="bg-[#F8D2D2] p-2 rounded-full text-[#A34E42]">
-                    <Wallet className="h-4 w-4 stroke-[2.5]" />
+                  <div className="bg-rose-100 p-2 rounded-full text-rose-600">
+                    <Wallet className="h-5 w-5 stroke-[2.5]" />
                   </div>
-                  <span className="text-xs font-bold text-slate-600">รายจ่าย</span>
+                  <span className="text-sm font-bold text-slate-600">รายจ่าย</span>
                 </div>
-                <div className="text-[1.35rem] font-bold text-[#A34E42] relative z-10">
+                <div className="text-2xl lg:text-3xl font-bold text-rose-600 relative z-10">
                   ฿ {data.totalExpense.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </div>
               </div>
             </div>
 
-            <div className="bg-[#42646D] rounded-[2rem] p-6 text-white shadow-lg relative overflow-hidden min-h-[120px] flex flex-col justify-center">
+            <div className="bg-slate-800 rounded-[2rem] p-6 text-white shadow-lg relative overflow-hidden min-h-[140px] flex flex-col justify-center">
               <div className="absolute -right-8 -bottom-16 w-48 h-48 bg-white/10 rounded-full blur-md" />
               <div className="flex items-center gap-3 mb-2 relative z-10">
                 <div className="bg-white/20 p-2 rounded-full text-white">
-                  <PiggyBank className="h-5 w-5 stroke-[2.5]" />
+                  <PiggyBank className="h-6 w-6 stroke-[2.5]" />
                 </div>
-                <span className="text-xs font-bold text-white/90">เงินคงเหลือสุทธิ</span>
+                <span className="text-sm font-bold text-white/90">เงินคงเหลือสุทธิ</span>
               </div>
-              <div className="text-[2.5rem] font-extrabold tracking-tight relative z-10">
+              <div className="text-5xl font-extrabold tracking-tight relative z-10">
                 ฿ {data.balance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </div>
-              {data.balance > 0 && <p className="text-[11px] font-medium text-white/80 mt-1 relative z-10 tracking-tight">คุณประหยัดเงินได้ดีมาก!</p>}
+              {data.balance > 0 && <p className="text-sm font-medium text-white/80 mt-1 relative z-10 tracking-tight">คุณประหยัดเงินได้ดีมาก!</p>}
             </div>
           </div>
 
           {/* Chart */}
           {filter !== "day" && data.chartData.length > 0 && (
             <div className="bg-white rounded-[2rem] p-5 shadow-[0_2px_15px_rgba(0,0,0,0.02)] border border-white mb-4">
-              <h3 className="font-extrabold text-slate-800 text-[1rem] mb-4">
+              <h3 className="font-extrabold text-slate-800 text-xl mb-4">
                 {filter === "month" ? "รายรับ-รายจ่ายรายวัน" : "รายรับ-รายจ่ายรายเดือน"}
               </h3>
               <div className="h-56">
@@ -195,8 +195,8 @@ export default function SummaryPage() {
                       ]}
                     />
                     <Legend formatter={(value: string) => (value === "income" ? "รายรับ" : "รายจ่าย")} />
-                    <Bar dataKey="income" fill="#719AA8" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="expense" fill="#A34E42" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="income" fill="#10B981" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="expense" fill="#F43F5E" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -250,11 +250,11 @@ export default function SummaryPage() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-                              <span className="text-sm font-bold text-slate-700">{cat.name}</span>
+                              <span className="text-base font-bold text-slate-700">{cat.name}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-[#42646D]">+฿{cat.amount.toLocaleString()}</span>
-                              <span className="text-[10px] font-bold text-[#42646D] bg-[#E5F3F7] px-2 py-0.5 rounded-full">{percent}%</span>
+                              <span className="text-base font-bold text-emerald-600">+฿{cat.amount.toLocaleString()}</span>
+                              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{percent}%</span>
                             </div>
                           </div>
                           <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
@@ -287,15 +287,15 @@ export default function SummaryPage() {
                     className="flex items-center justify-between py-3 px-1 border-b border-slate-50 last:border-0"
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`flex h-9 w-9 items-center justify-center rounded-full text-xs ${t.type === "income" ? "bg-[#E5F3F7] text-[#42646D]" : "bg-[#FCEAEA] text-[#A34E42]"}`}>
-                        {t.type === "income" ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                      <div className={`flex h-12 w-12 items-center justify-center rounded-full text-base ${t.type === "income" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"}`}>
+                        {t.type === "income" ? <TrendingUp className="h-6 w-6" /> : <TrendingDown className="h-6 w-6" />}
                       </div>
                       <div>
-                        <p className="font-bold text-sm text-slate-800">{t.note || t.category}</p>
-                        <p className="text-[11px] text-slate-400 font-medium">{dayjs(t.transactionDate).format("D MMM YYYY HH:mm น.")} • {t.category}</p>
+                        <p className="font-bold text-lg text-slate-800">{t.note || t.category}</p>
+                        <p className="text-sm text-slate-400 font-medium">{dayjs(t.transactionDate).format("D MMM YYYY HH:mm น.")} • {t.category}</p>
                       </div>
                     </div>
-                    <p className={`font-bold ${t.type === "income" ? "text-[#42646D]" : "text-[#A34E42]"}`}>
+                    <p className={`font-bold text-xl ${t.type === "income" ? "text-emerald-600" : "text-rose-600"}`}>
                       {t.type === "income" ? "+" : "-"}฿{t.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                     </p>
                   </div>
