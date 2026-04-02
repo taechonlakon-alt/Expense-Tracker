@@ -81,12 +81,12 @@ export function TransactionFormModal({ isOpen, onClose, type, editData }: Transa
 
       if (!res.ok) throw new Error("Failed to save transaction")
       
+      onClose()
       toast.success(editData ? "แก้ไขข้อมูลเรียบร้อยแล้ว" : "บันทึกข้อมูลเรียบร้อยแล้ว", {
         description: `${type === 'income' ? 'รายรับ' : 'รายจ่าย'} ${formData.amount} บาท`
       })
       
       router.refresh()
-      onClose()
     } catch (error) {
       toast.error("เกิดข้อผิดพลาดในการบันทึกข้อมูล")
     } finally {
