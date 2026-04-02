@@ -5,12 +5,10 @@ import { MoreVertical, Edit2, Trash2 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { TransactionFormModal } from "./TransactionFormModal"
-import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import dayjs from "dayjs"
 
-export function TransactionActions({ transaction }: { transaction: any }) {
-  const router = useRouter()
+export function TransactionActions({ transaction, onRefresh }: { transaction: any; onRefresh?: () => void }) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -23,7 +21,7 @@ export function TransactionActions({ transaction }: { transaction: any }) {
       })
       if (!res.ok) throw new Error("Failed to delete")
       toast.success("ลบรายการสำเร็จ")
-      router.refresh()
+      if (onRefresh) onRefresh()
     } catch (error) {
       toast.error("เกิดข้อผิดพลาดในการลบรายการ")
     } finally {

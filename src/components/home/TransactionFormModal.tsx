@@ -21,7 +21,6 @@ const INCOME_CATEGORIES = ["เงินเดือน", "เงินพิเ
 const EXPENSE_CATEGORIES = ["อาหาร", "เดินทาง", "ค่าน้ำมัน", "ค่าหอ", "ค่าเรียน", "บันเทิง", "ช้อปปิ้ง", "อื่นๆ"]
 
 export function TransactionFormModal({ isOpen, onClose, type, editData }: TransactionFormModalProps) {
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
   
   const [formData, setFormData] = useState({
