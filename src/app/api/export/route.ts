@@ -13,7 +13,11 @@ export async function GET(request: NextRequest) {
     let endDate: Date;
     let filenameLabel: string;
 
-    if (filterType === "year") {
+    if (filterType === "day") {
+      startDate = baseDate.startOf("day").toDate();
+      endDate = baseDate.endOf("day").toDate();
+      filenameLabel = baseDate.format("YYYY-MM-DD");
+    } else if (filterType === "year") {
       startDate = baseDate.startOf("year").toDate();
       endDate = baseDate.endOf("year").toDate();
       filenameLabel = baseDate.format("YYYY");
