@@ -298,7 +298,7 @@ export default function SummaryPage() {
                     <Tooltip 
                       cursor={{ fill: '#f8fafc' }}
                       contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '12px' }}
-                      formatter={(value: any) => [`฿${value.toLocaleString()}`, '']}
+                      formatter={(value: any) => [`฿${value.toLocaleString()}`, ]}
                       labelStyle={{ fontWeight: 'bold', marginBottom: '4px', color: '#1e293b' }}
                     />
                     <Bar 
