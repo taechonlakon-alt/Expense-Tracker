@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { ChevronLeft, ChevronRight, ChevronDown, Banknote, Wallet, PiggyBank, TrendingUp, TrendingDown, Download } from "lucide-react"
+import { ChevronLeft, ChevronRight, ChevronDown, Banknote, Wallet, PiggyBank, TrendingUp, TrendingDown, Download, ShoppingBag, Car, CircleDollarSign } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { th } from "date-fns/locale"
@@ -10,7 +10,7 @@ import dayjs from "@/lib/dayjs"
 
 // dayjs locale and plugins are set in lib/dayjs
 
-type FilterType = "day" | "month" | "year"
+type FilterType = "month" | "year"
 
 interface SummaryData {
   totalIncome: number
@@ -19,6 +19,13 @@ interface SummaryData {
   categories: { name: string; amount: number; type: string }[]
   chartData: { label: string; income: number; expense: number }[]
   transactions: { id: number; type: string; amount: number; category: string; note: string | null; transactionDate: string }[]
+}
+
+function getCategoryIcon(type: string, category: string) {
+  if (type === "income") return <Banknote className="h-5 w-5" />
+  if (category.includes("อาหาร")) return <ShoppingBag className="h-5 w-5" />
+  if (category.includes("เดินทาง") || category.includes("น้ำมัน")) return <Car className="h-5 w-5" />
+  return <CircleDollarSign className="h-5 w-5" />
 }
 
 export default function SummaryPage() {
@@ -46,18 +53,17 @@ export default function SummaryPage() {
   }, [fetchSummary])
 
   const navigateDate = (direction: "prev" | "next") => {
-    const unit = filter === "day" ? "day" : filter === "month" ? "month" : "year"
+    const unit = filter === "month" ? "month" : "year"
     setCurrentDate(prev => direction === "prev" ? prev.subtract(1, unit) : prev.add(1, unit))
   }
 
   const getDateLabel = () => {
-    if (filter === "day") return currentDate.format("D MMMM YYYY")
     if (filter === "month") return currentDate.format("MMMM YYYY")
     return currentDate.format("YYYY")
   }
 
   const handleExportCSV = () => {
-    window.open(`/api/export?date=${currentDate.format("YYYY-MM-DD")}`, "_blank")
+    window.open(`/api/export?filter=${filter}&date=${currentDate.format("YYYY-MM-DD")}`, "_blank")
   }
 
   const totalExpenseForPercent = data?.categories
@@ -89,13 +95,13 @@ export default function SummaryPage() {
             <p className="text-sm font-medium text-slate-500 mt-1 tracking-tight">ภาพรวมการเงินของคุณ</p>
           </div>
           <div className="flex bg-[#F2F0E9] rounded-full p-1 shadow-inner border border-slate-100">
-            {(["day", "month", "year"] as FilterType[]).map(f => (
+            {(["month", "year"] as FilterType[]).map(f => (
               <button 
                 key={f}
                 onClick={() => setFilter(f)}
                 className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${filter === f ? "bg-white text-[#42646D] shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
               >
-                {f === "day" ? "วัน" : f === "month" ? "เดือน" : "ปี"}
+                {f === "month" ? "เดือน" : "ปี"}
               </button>
             ))}
           </div>
@@ -111,20 +117,65 @@ export default function SummaryPage() {
               <span className="font-extrabold text-slate-800 text-sm">{getDateLabel()}</span>
               <ChevronDown className="h-3 w-3 stroke-[3] text-slate-400" />
             </PopoverTrigger>
-            <PopoverContent align="center" className="w-[auto] p-0 rounded-[2rem] border-0 shadow-[0_10px_40px_rgba(0,0,0,0.08)] bg-white overflow-hidden">
-              <Calendar
-                mode="single"
-                locale={th}
-                selected={currentDate.toDate()}
-                onSelect={(date) => {
-                  if (date) {
-                    setCurrentDate(dayjs(date))
-                    setIsCalendarOpen(false)
-                  }
-                }}
-                initialFocus
-                className="p-4"
-              />
+            <PopoverContent align="center" className="w-[280px] p-4 rounded-[2rem] border-0 shadow-[0_10px_40px_rgba(0,0,0,0.08)] bg-white overflow-hidden">
+              {filter === "month" && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <button onClick={() => setCurrentDate(prev => prev.subtract(1, "year"))} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-600">
+                      <ChevronLeft className="h-4 w-4 stroke-[3]" />
+                    </button>
+                    <div className="font-bold text-slate-800 text-lg">{currentDate.format("YYYY")}</div>
+                    <button onClick={() => setCurrentDate(prev => prev.add(1, "year"))} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-600">
+                      <ChevronRight className="h-4 w-4 stroke-[3]" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."].map((m, i) => (
+                      <button 
+                        key={m} 
+                        onClick={() => {
+                          setCurrentDate(currentDate.month(i));
+                          setIsCalendarOpen(false);
+                        }}
+                        className={`p-2.5 text-sm rounded-xl font-bold transition-colors ${currentDate.month() === i ? "bg-[#42646D] text-white shadow-sm" : "hover:bg-slate-100 text-slate-600"}`}
+                      >
+                         {m}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {filter === "year" && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <button onClick={() => setCurrentDate(prev => prev.subtract(12, "year"))} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-600">
+                       <ChevronLeft className="h-4 w-4 stroke-[3]" />
+                    </button>
+                    <div className="font-bold text-slate-800 text-sm">เลือกปี</div>
+                    <button onClick={() => setCurrentDate(prev => prev.add(12, "year"))} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-600">
+                       <ChevronRight className="h-4 w-4 stroke-[3]" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                     {Array.from({length: 12}).map((_, i) => {
+                        const yearVal = currentDate.year() - 5 + i;
+                        return (
+                          <button
+                             key={yearVal}
+                             onClick={() => {
+                                setCurrentDate(currentDate.year(yearVal));
+                                setIsCalendarOpen(false);
+                             }}
+                             className={`p-3 text-sm rounded-xl font-bold transition-colors ${currentDate.year() === yearVal ? "bg-[#42646D] text-white shadow-sm" : "hover:bg-slate-100 text-slate-600"}`}
+                          >
+                            {yearVal}
+                          </button>
+                        )
+                     })}
+                  </div>
+                </div>
+              )}
             </PopoverContent>
           </Popover>
 
@@ -133,15 +184,13 @@ export default function SummaryPage() {
           </button>
         </div>
 
-        {filter === "month" && (
-          <button
-            onClick={handleExportCSV}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white border border-slate-100 shadow-sm text-sm font-bold text-[#42646D] hover:bg-[#EAF0F6] transition-all active:scale-[0.98]"
-          >
-            <Download className="h-4 w-4 stroke-[2.5]" />
-            ดาวน์โหลด CSV ประจำเดือนนี้
-          </button>
-        )}
+        <button
+          onClick={handleExportCSV}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white border border-slate-100 shadow-sm text-sm font-bold text-[#42646D] hover:bg-[#EAF0F6] transition-all active:scale-[0.98]"
+        >
+          <Download className="h-4 w-4 stroke-[2.5]" />
+          ดาวน์โหลด CSV ประจำ{filter === "month" ? "เดือน" : "ปี"}นี้
+        </button>
       </div>
 
       {/* Loading State */}
@@ -201,7 +250,7 @@ export default function SummaryPage() {
           </div>
 
           {/* Chart */}
-          {filter !== "day" && data.chartData.length > 0 && (
+          {data.chartData.length > 0 && (
             <div className="bg-white rounded-[2rem] p-5 shadow-[0_2px_15px_rgba(0,0,0,0.02)] border border-white mb-4">
               <h3 className="font-extrabold text-slate-800 text-xl mb-4">
                 {filter === "month" ? "รายรับ-รายจ่ายรายวัน" : "รายรับ-รายจ่ายรายเดือน"}
@@ -313,11 +362,16 @@ export default function SummaryPage() {
                   >
                     <div className="flex items-center gap-3">
                       <div className={`flex h-12 w-12 items-center justify-center rounded-full text-base ${t.type === "income" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"}`}>
-                        {t.type === "income" ? <TrendingUp className="h-6 w-6" /> : <TrendingDown className="h-6 w-6" />}
+                        {getCategoryIcon(t.type, t.category)}
                       </div>
                       <div>
                         <p className="font-bold text-lg text-slate-800">{t.note || t.category}</p>
-                        <p className="text-sm text-slate-400 font-medium">{dayjs(t.transactionDate).tz("Asia/Bangkok").format("D MMM YYYY HH:mm น.")} • {t.category}</p>
+                        <p className="text-sm text-slate-400 font-medium">
+                          {filter === "year" 
+                            ? dayjs(t.transactionDate).tz("Asia/Bangkok").format("D MMM HH:mm น.")
+                            : dayjs(t.transactionDate).tz("Asia/Bangkok").format("D MMM YYYY HH:mm น.")
+                          } • {t.category}
+                        </p>
                       </div>
                     </div>
                     <p className={`font-bold text-xl ${t.type === "income" ? "text-emerald-600" : "text-rose-600"}`}>

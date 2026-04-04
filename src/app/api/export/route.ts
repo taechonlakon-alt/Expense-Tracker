@@ -5,12 +5,23 @@ import dayjs from "@/lib/dayjs";
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
+    const filterType = searchParams.get("filter") || "month";
     const dateParam = searchParams.get("date") || dayjs().format("YYYY-MM-DD");
 
     const baseDate = dayjs(dateParam);
-    const startDate = baseDate.startOf("month").toDate();
-    const endDate = baseDate.endOf("month").toDate();
-    const monthLabel = baseDate.format("YYYY-MM");
+    let startDate: Date;
+    let endDate: Date;
+    let filenameLabel: string;
+
+    if (filterType === "year") {
+      startDate = baseDate.startOf("year").toDate();
+      endDate = baseDate.endOf("year").toDate();
+      filenameLabel = baseDate.format("YYYY");
+    } else {
+      startDate = baseDate.startOf("month").toDate();
+      endDate = baseDate.endOf("month").toDate();
+      filenameLabel = baseDate.format("YYYY-MM");
+    }
 
     const transactions = await prisma.transaction.findMany({
       where: {
@@ -42,7 +53,7 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         "Content-Type": "text/csv; charset=utf-8",
-        "Content-Disposition": `attachment; filename="expense-summary-${monthLabel}.csv"`,
+        "Content-Disposition": `attachment; filename="expense-summary-${filenameLabel}.csv"`,
       },
     });
   } catch (error) {
