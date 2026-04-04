@@ -3,10 +3,9 @@
 import { useState, useEffect, useCallback } from "react"
 import { ChevronLeft, ChevronRight, Banknote, Wallet, PiggyBank, TrendingUp, TrendingDown, Download } from "lucide-react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
-import dayjs from "dayjs"
-import "dayjs/locale/th"
+import dayjs from "@/lib/dayjs"
 
-dayjs.locale("th")
+// dayjs locale and plugins are set in lib/dayjs
 
 type FilterType = "day" | "month" | "year"
 
@@ -292,7 +291,7 @@ export default function SummaryPage() {
                       </div>
                       <div>
                         <p className="font-bold text-lg text-slate-800">{t.note || t.category}</p>
-                        <p className="text-sm text-slate-400 font-medium">{dayjs(t.transactionDate).format("D MMM YYYY HH:mm น.")} • {t.category}</p>
+                        <p className="text-sm text-slate-400 font-medium">{dayjs(t.transactionDate).tz("Asia/Bangkok").format("D MMM YYYY HH:mm น.")} • {t.category}</p>
                       </div>
                     </div>
                     <p className={`font-bold text-xl ${t.type === "income" ? "text-emerald-600" : "text-rose-600"}`}>

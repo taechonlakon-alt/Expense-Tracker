@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 
 export async function GET(request: NextRequest) {
   try {
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
         dailyMap[key] = { income: 0, expense: 0 };
       }
       transactions.forEach((t: { type: string; amount: number; transactionDate: Date }) => {
-        const day = dayjs(t.transactionDate).date().toString();
+        const day = dayjs(t.transactionDate).tz("Asia/Bangkok").date().toString();
         if (!dailyMap[day]) dailyMap[day] = { income: 0, expense: 0 };
         if (t.type === "income") dailyMap[day].income += t.amount;
         if (t.type === "expense") dailyMap[day].expense += t.amount;
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
         dailyMap[i.toString()] = { income: 0, expense: 0 };
       }
       transactions.forEach((t: { type: string; amount: number; transactionDate: Date }) => {
-        const month = (dayjs(t.transactionDate).month() + 1).toString();
+        const month = (dayjs(t.transactionDate).tz("Asia/Bangkok").month() + 1).toString();
         if (!dailyMap[month]) dailyMap[month] = { income: 0, expense: 0 };
         if (t.type === "income") dailyMap[month].income += t.amount;
         if (t.type === "expense") dailyMap[month].expense += t.amount;

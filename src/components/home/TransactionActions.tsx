@@ -6,7 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { TransactionFormModal } from "./TransactionFormModal"
 import { toast } from "sonner"
-import dayjs from "dayjs"
+import dayjs from "@/lib/dayjs"
 
 export function TransactionActions({ transaction, onRefresh }: { transaction: any; onRefresh?: () => void }) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -32,8 +32,8 @@ export function TransactionActions({ transaction, onRefresh }: { transaction: an
 
   const editData = {
     ...transaction,
-    date: dayjs(transaction.transactionDate).format('YYYY-MM-DD'),
-    time: dayjs(transaction.transactionDate).format('HH:mm'),
+    date: dayjs(transaction.transactionDate).tz("Asia/Bangkok").format('YYYY-MM-DD'),
+    time: dayjs(transaction.transactionDate).tz("Asia/Bangkok").format('HH:mm'),
   }
 
   return (

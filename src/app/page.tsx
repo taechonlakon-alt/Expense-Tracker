@@ -3,13 +3,12 @@
 import { useState, useEffect, useCallback } from "react"
 import { ShoppingBag, Banknote, Car, CircleDollarSign, Plus, Minus } from "lucide-react"
 import Link from "next/link"
-import dayjs from "dayjs"
-import "dayjs/locale/th"
+import dayjs from "@/lib/dayjs"
 import { TransactionActions } from "@/components/home/TransactionActions"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { TransactionFormModal } from "@/components/home/TransactionFormModal"
 
-dayjs.locale('th')
+// dayjs locale and plugins are set in lib/dayjs
 
 interface Transaction {
   id: number
@@ -157,7 +156,7 @@ export default function Home() {
                 </div>
                 <div>
                   <p className="font-bold text-lg text-slate-800">{t.note || t.category}</p>
-                  <p className="text-sm font-medium text-slate-400 mt-0.5">{dayjs(t.transactionDate).format('DD MMM HH:mm น.')} • {t.category}</p>
+                  <p className="text-sm font-medium text-slate-400 mt-0.5">{dayjs(t.transactionDate).tz("Asia/Bangkok").format('DD MMM HH:mm น.')} • {t.category}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">

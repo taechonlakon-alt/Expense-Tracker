@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,8 +27,8 @@ export async function GET(request: NextRequest) {
     const header = "วันที่,เวลา,ประเภท,หมวดหมู่,จำนวนเงิน,หมายเหตุ";
 
     const rows = transactions.map((t: { type: string; amount: number; category: string; note: string | null; transactionDate: Date }) => {
-      const date = dayjs(t.transactionDate).format("DD/MM/YYYY");
-      const time = dayjs(t.transactionDate).format("HH:mm");
+      const date = dayjs(t.transactionDate).tz("Asia/Bangkok").format("DD/MM/YYYY");
+      const time = dayjs(t.transactionDate).tz("Asia/Bangkok").format("HH:mm");
       const type = t.type === "income" ? "รายรับ" : "รายจ่าย";
       const amount = t.type === "income" ? t.amount.toFixed(2) : `-${t.amount.toFixed(2)}`;
       const note = (t.note || "").replace(/,/g, " "); // escape commas in note

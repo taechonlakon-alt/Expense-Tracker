@@ -1,12 +1,11 @@
 import prisma from "@/lib/prisma"
 import { ShoppingBag, Banknote, Car, CircleDollarSign } from "lucide-react"
 import Link from "next/link"
-import dayjs from "dayjs"
-import "dayjs/locale/th"
+import dayjs from "@/lib/dayjs"
 import { TransactionActions } from "./TransactionActions"
 import { EmptyState } from "../shared/EmptyState"
 
-dayjs.locale('th')
+// dayjs locale and plugins are set in lib/dayjs
 
 function getCategoryIcon(type: string, category: string) {
   if (type === "income") return <Banknote className="h-5 w-5" />
@@ -44,7 +43,7 @@ export async function RecentTransactionList() {
               </div>
               <div>
                 <p className="font-bold text-slate-800">{t.note || t.category}</p>
-                <p className="text-xs font-medium text-slate-400 mt-0.5">{dayjs(t.transactionDate).format('DD MMM HH:mm น.')} • {t.category}</p>
+                <p className="text-xs font-medium text-slate-400 mt-0.5">{dayjs(t.transactionDate).tz("Asia/Bangkok").format('DD MMM HH:mm น.')} • {t.category}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">

@@ -92,7 +92,7 @@ export function TransactionFormModal({ isOpen, onClose, type, editData }: Transa
           amount: parseFloat(formData.amount),
           category: formData.category,
           note: formData.note,
-          transactionDate: `${formData.date}T${formData.time}`
+          transactionDate: `${formData.date}T${formData.time}:00+07:00`
         })
       })
 
