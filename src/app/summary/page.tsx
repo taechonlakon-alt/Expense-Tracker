@@ -1,7 +1,10 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { ChevronLeft, ChevronRight, Banknote, Wallet, PiggyBank, TrendingUp, TrendingDown, Download } from "lucide-react"
+import { ChevronLeft, ChevronRight, ChevronDown, Banknote, Wallet, PiggyBank, TrendingUp, TrendingDown, Download } from "lucide-react"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { th } from "date-fns/locale"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
 import dayjs from "@/lib/dayjs"
 
@@ -23,6 +26,7 @@ export default function SummaryPage() {
   const [currentDate, setCurrentDate] = useState(dayjs())
   const [data, setData] = useState<SummaryData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false)
 
   const fetchSummary = useCallback(async () => {
     setLoading(true)
@@ -101,7 +105,29 @@ export default function SummaryPage() {
           <button onClick={() => navigateDate("prev")} className="p-2 hover:bg-white rounded-full text-slate-600 transition-colors">
             <ChevronLeft className="h-4 w-4 stroke-[3]" />
           </button>
-          <span className="font-extrabold text-slate-800 text-sm">{getDateLabel()}</span>
+          
+          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+            <PopoverTrigger className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-white hover:shadow-sm transition-all focus:outline-none">
+              <span className="font-extrabold text-slate-800 text-sm">{getDateLabel()}</span>
+              <ChevronDown className="h-3 w-3 stroke-[3] text-slate-400" />
+            </PopoverTrigger>
+            <PopoverContent align="center" className="w-[auto] p-0 rounded-[2rem] border-0 shadow-[0_10px_40px_rgba(0,0,0,0.08)] bg-white overflow-hidden">
+              <Calendar
+                mode="single"
+                locale={th}
+                selected={currentDate.toDate()}
+                onSelect={(date) => {
+                  if (date) {
+                    setCurrentDate(dayjs(date))
+                    setIsCalendarOpen(false)
+                  }
+                }}
+                initialFocus
+                className="p-4"
+              />
+            </PopoverContent>
+          </Popover>
+
           <button onClick={() => navigateDate("next")} className="p-2 hover:bg-white rounded-full text-slate-600 transition-colors">
             <ChevronRight className="h-4 w-4 stroke-[3]" />
           </button>
