@@ -13,7 +13,7 @@ const kanit = Kanit({
 });
 
 export const metadata: Metadata = {
-  title: "Simple Income & Expense Tracker",
+  title: "อู่สะกลการช่าง รายรับ-รายจ่าย",
   description: "Track your income and expenses easily.",
 };
 
