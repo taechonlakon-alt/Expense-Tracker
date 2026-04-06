@@ -1,12 +1,30 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import dayjs from "@/lib/dayjs";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const searchParams = request.nextUrl.searchParams;
+    const dateParam = searchParams.get("date");
+
+    let whereClause = {};
+
+    if (dateParam) {
+      const baseDate = dayjs(dateParam);
+      whereClause = {
+        transactionDate: {
+          gte: baseDate.startOf("day").toDate(),
+          lte: baseDate.endOf("day").toDate(),
+        },
+      };
+    }
+
     const transactions = await prisma.transaction.findMany({
+      where: whereClause,
       orderBy: { transactionDate: 'desc' },
-      take: 50
+      take: 100 // Increased limit as we might filter by day
     });
+    
     return NextResponse.json(transactions);
   } catch (error) {
     console.error(error);

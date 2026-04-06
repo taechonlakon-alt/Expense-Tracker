@@ -239,7 +239,7 @@ export default function SummaryPage() {
                   </div>
                   <span className="text-sm font-bold text-slate-600">รายรับ</span>
                 </div>
-                <div className="text-2xl lg:text-3xl font-bold text-emerald-600 relative z-10">
+                <div className="text-xl xs:text-2xl lg:text-3xl font-bold text-emerald-600 relative z-10">
                   ฿ {data.totalIncome.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </div>
               </div>
@@ -251,7 +251,7 @@ export default function SummaryPage() {
                   </div>
                   <span className="text-sm font-bold text-slate-600">รายจ่าย</span>
                 </div>
-                <div className="text-2xl lg:text-3xl font-bold text-rose-600 relative z-10">
+                <div className="text-xl xs:text-2xl lg:text-3xl font-bold text-rose-600 relative z-10">
                   ฿ {data.totalExpense.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </div>
               </div>
@@ -265,7 +265,7 @@ export default function SummaryPage() {
                 </div>
                 <span className="text-sm font-bold text-white/90">เงินคงเหลือสุทธิ</span>
               </div>
-              <div className="text-5xl font-extrabold tracking-tight relative z-10">
+              <div className="text-3xl xs:text-4xl md:text-5xl font-extrabold tracking-tight relative z-10">
                 ฿ {data.balance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </div>
               {data.balance > 0 && <p className="text-sm font-medium text-white/80 mt-1 relative z-10 tracking-tight">คุณประหยัดเงินได้ดีมาก!</p>}
@@ -278,7 +278,7 @@ export default function SummaryPage() {
               <h3 className="font-extrabold text-slate-800 text-xl mb-6">
                 {filter === "month" ? "รายรับ-รายจ่ายรายวัน" : "รายรับ-รายจ่ายรายเดือน"}
               </h3>
-              <div className="h-[300px] w-full">
+              <div className="h-[250px] md:h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data.chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />

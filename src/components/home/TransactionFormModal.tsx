@@ -112,7 +112,7 @@ export function TransactionFormModal({ isOpen, onClose, type, editData }: Transa
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md bg-[#FAFAFA] rounded-3xl p-6 border-0 shadow-lg">
+      <DialogContent className="sm:max-w-md bg-[#FAFAFA] rounded-3xl p-4 md:p-6 border-0 shadow-lg max-h-[96vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-extrabold text-center text-slate-800">
              {editData ? "แก้ไข" : "เพิ่ม"}{type === "income" ? "รายรับ" : "รายจ่าย"}
@@ -127,7 +127,7 @@ export function TransactionFormModal({ isOpen, onClose, type, editData }: Transa
               step="1.00"
               required
               placeholder="0.00"
-              className="w-full text-5xl lg:text-6xl font-extrabold text-slate-800 border-none bg-white rounded-2xl p-5 shadow-sm focus:ring-2 focus:ring-emerald-500 transition-all outline-none"
+              className="w-full text-4xl xs:text-5xl md:text-6xl font-extrabold text-slate-800 border-none bg-white rounded-2xl p-4 md:p-5 shadow-sm focus:ring-2 focus:ring-emerald-500 transition-all outline-none"
               value={formData.amount}
               onChange={(e) => setFormData({...formData, amount: e.target.value})}
             />
@@ -198,7 +198,7 @@ export function TransactionFormModal({ isOpen, onClose, type, editData }: Transa
           <button 
             type="submit" 
             disabled={loading}
-            className={`w-full mt-8 py-5 rounded-full font-bold text-white text-xl shadow-md transition-transform hover:scale-[1.02] active:scale-[0.98] ${type === 'income' ? 'bg-emerald-500 shadow-emerald-500/30 hover:bg-emerald-600' : 'bg-rose-500 shadow-rose-500/30 hover:bg-rose-600'}`}
+            className={`w-full mt-6 md:mt-8 py-4 md:py-5 rounded-full font-bold text-white text-lg md:text-xl shadow-md transition-transform hover:scale-[1.02] active:scale-[0.98] ${type === 'income' ? 'bg-emerald-500 shadow-emerald-500/30 hover:bg-emerald-600' : 'bg-rose-500 shadow-rose-500/30 hover:bg-rose-600'}`}
           >
             {loading ? "กำลังบันทึก..." : "บันทึกข้อมูล"}
           </button>
