@@ -1,22 +1,31 @@
-"use client"
-import { Lock, KeyRound } from "lucide-react"
+﻿"use client"
+import { CircleDollarSign, Lock, KeyRound } from "lucide-react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { useAuth } from "@/components/shared/AuthProvider"
 
 export function Navbar() {
   const { logout, changePin } = useAuth();
+  const pathname = usePathname();
+
+  const linkClassName = (href: string) =>
+    pathname === href ? "text-slate-900" : "hover:text-slate-900 transition-colors";
 
   return (
     <header className="sticky top-0 z-50 w-full bg-transparent px-4 py-4">
       <div className="mx-auto flex h-14 max-w-2xl items-center gap-4 bg-white">
         <div className="flex flex-1 items-center justify-between">
           <span className="font-bold text-slate-700 text-xl">
-            <Link href="/" className="hover:text-slate-900 transition-colors">อู่สะกลการช่าง รายรับ-รายจ่าย</Link>
+            <Link href="/" className="hover:text-slate-900 transition-colors">ติดตาม รายรับ-รายจ่าย</Link>
           </span>
           <div className="flex items-center gap-2">
             <nav className="hidden md:flex items-center gap-6 text-base font-semibold text-slate-500 mr-2">
-              <Link href="/" className="hover:text-slate-900 transition-colors">หน้าหลัก</Link>
-              <Link href="/summary" className="hover:text-slate-900 transition-colors">สรุปผล</Link>
+              <Link href="/" className={linkClassName("/")}>หน้าหลัก</Link>
+              <Link href="/summary" className={linkClassName("/summary")}>สรุปผล</Link>
+              <Link href="/debts" className={`inline-flex items-center gap-1.5 ${linkClassName("/debts")}`}>
+                <CircleDollarSign className="h-4 w-4" />
+                <span>หนี้ลูกค้า</span>
+              </Link>
             </nav>
             <button
               onClick={changePin}
@@ -38,3 +47,4 @@ export function Navbar() {
     </header>
   )
 }
+

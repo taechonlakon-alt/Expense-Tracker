@@ -1,18 +1,19 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { ChevronLeft, ChevronRight, ChevronDown, Banknote, Wallet, PiggyBank, Download, ShoppingBag, Car, CircleDollarSign } from "lucide-react"
+import { ChevronLeft, ChevronRight, ChevronDown, Banknote, Wallet, PiggyBank, Download, ShoppingBag, Car, CircleDollarSign, ChartColumn, ChartPie } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { th } from "date-fns/locale"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
 import dayjs from "@/lib/dayjs"
 import { TransactionActions } from "@/components/home/TransactionActions"
-import { TrendingUp as TrendingUpIcon } from "lucide-react"
+import { PaginationControls } from "@/components/shared/PaginationControls"
 
 // dayjs locale and plugins are set in lib/dayjs
 
 type FilterType = "day" | "month" | "year"
+type ChartMode = "bar" | "pie"
 
 interface SummaryData {
   totalIncome: number
@@ -31,11 +32,14 @@ function getCategoryIcon(type: string, category: string) {
 }
 
 export default function SummaryPage() {
+  const transactionsPerPage = 10
   const [filter, setFilter] = useState<FilterType>("month")
   const [currentDate, setCurrentDate] = useState(dayjs())
   const [data, setData] = useState<SummaryData | null>(null)
   const [loading, setLoading] = useState(true)
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
+  const [chartMode, setChartMode] = useState<ChartMode>("bar")
+  const [transactionPage, setTransactionPage] = useState(1)
 
   const fetchSummary = useCallback(async () => {
     setLoading(true)
@@ -53,6 +57,10 @@ export default function SummaryPage() {
   useEffect(() => {
     fetchSummary()
   }, [fetchSummary])
+
+  useEffect(() => {
+    setTransactionPage(1)
+  }, [filter, currentDate])
 
   const navigateDate = (direction: "prev" | "next") => {
     const unit = filter === "day" ? "day" : filter === "month" ? "month" : "year"
@@ -73,9 +81,41 @@ export default function SummaryPage() {
     fetchSummary()
   }
 
+  const pieData = [
+    { name: "รายรับ", value: data?.totalIncome || 0, color: "#159A61" },
+    { name: "รายจ่าย", value: data?.totalExpense || 0, color: "#FF1616" },
+  ]
+
+  const pieTotal = pieData.reduce((sum, item) => sum + item.value, 0)
   const totalExpenseForPercent = data?.categories
-    .filter(c => c.type === "expense")
-    .reduce((sum, c) => sum + c.amount, 0) || 1
+    .filter(category => category.type === "expense")
+    .reduce((sum, category) => sum + category.amount, 0) || 1
+  const totalIncomeForPercent = data?.categories
+    .filter(category => category.type === "income")
+    .reduce((sum, category) => sum + category.amount, 0) || 1
+  const totalTransactionPages = Math.max(1, Math.ceil((data?.transactions.length || 0) / transactionsPerPage))
+  const paginatedTransactions = data?.transactions.slice(
+    (transactionPage - 1) * transactionsPerPage,
+    transactionPage * transactionsPerPage
+  ) || []
+  const transactionRangeStart = data?.transactions.length ? (transactionPage - 1) * transactionsPerPage + 1 : 0
+  const transactionRangeEnd = data?.transactions.length
+    ? Math.min(transactionPage * transactionsPerPage, data.transactions.length)
+    : 0
+
+  useEffect(() => {
+    if (transactionPage > totalTransactionPages) {
+      setTransactionPage(totalTransactionPages)
+    }
+  }, [transactionPage, totalTransactionPages])
+
+  const formatBarTooltipLabel = (label: string | number) => {
+    if (filter === "year") {
+      return dayjs(`${currentDate.year()}-${String(label).padStart(2, "0")}-01`).format("MMM YYYY")
+    }
+
+    return dayjs(`${currentDate.format("YYYY-MM")}-${String(label).padStart(2, "0")}`).format("D/MM/YY")
+  }
 
   const CATEGORY_COLORS: Record<string, string> = {
     "อาหาร": "#F87171",
@@ -272,110 +312,230 @@ export default function SummaryPage() {
             </div>
           </div>
 
-          {/* Chart */}
-          {filter !== "day" && data.chartData.length > 0 && (
-            <div className="bg-white rounded-[2rem] p-6 shadow-[0_2px_15px_rgba(0,0,0,0.02)] border border-white mb-6">
-              <h3 className="font-extrabold text-slate-800 text-xl mb-6">
-                {filter === "month" ? "รายรับ-รายจ่ายรายวัน" : "รายรับ-รายจ่ายรายเดือน"}
-              </h3>
-              <div className="h-[250px] md:h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={data.chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis 
-                      dataKey="label" 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }}
-                      dy={10}
-                    />
-                    <YAxis 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{ fill: '#64748b', fontSize: 10 }}
-                      tickFormatter={(value) => `฿${value >= 1000 ? (value/1000).toFixed(0) + 'k' : value}`}
-                    />
-                    <Tooltip 
-                      cursor={{ fill: '#f8fafc' }}
-                      contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '12px' }}
-                      formatter={(value: any) => [`฿${value.toLocaleString()}`, ]}
-                      labelStyle={{ fontWeight: 'bold', marginBottom: '4px', color: '#1e293b' }}
-                    />
-                    <Bar 
-                      dataKey="income" 
-                      name="รายรับ" 
-                      fill="#10b981" 
-                      radius={[6, 6, 0, 0]} 
-                      barSize={filter === "month" ? 8 : 20}
-                    />
-                    <Bar 
-                      dataKey="expense" 
-                      name="รายจ่าย" 
-                      fill="#ef4444" 
-                      radius={[6, 6, 0, 0]} 
-                      barSize={filter === "month" ? 8 : 20}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+          <div className="mb-6 space-y-4">
+            <div className="flex flex-wrap justify-end gap-3">
+              <button
+                onClick={() => setChartMode("bar")}
+                className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-extrabold shadow-[0_8px_16px_rgba(0,0,0,0.18)] transition-all ${
+                  chartMode === "bar" ? "bg-[#D3D4D7] text-slate-900" : "bg-white text-slate-900 hover:bg-slate-50"
+                }`}
+              >
+                <ChartColumn className="h-5 w-5" />
+                <span>แผนภูมิแท่ง</span>
+              </button>
+              <button
+                onClick={() => setChartMode("pie")}
+                className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-extrabold shadow-[0_8px_16px_rgba(0,0,0,0.18)] transition-all ${
+                  chartMode === "pie" ? "bg-[#D3D4D7] text-slate-900" : "bg-white text-slate-900 hover:bg-slate-50"
+                }`}
+              >
+                <ChartPie className="h-5 w-5" />
+                <span>แผนภูมิวงกลม</span>
+              </button>
             </div>
-          )}
 
-          {/* Category Comparison */}
-          <div className="bg-[#F5F4F1] rounded-t-[2rem] rounded-b-[2.5rem] p-6 shadow-inner min-h-[200px] mb-6">
-            <h3 className="font-extrabold text-slate-800 text-[1.15rem] mb-5 tracking-tight">เปรียบเทียบตามหมวดหมู่</h3>
-            {data.categories.length === 0 ? (
-              <p className="text-center text-slate-400 py-8 text-sm font-medium italic">ยังไม่มีข้อมูลสำหรับการเปรียบเทียบ</p>
-            ) : (
-              <div className="space-y-5">
-                {data.categories.filter(c => c.type === "expense").map(cat => {
-                  const percent = Math.round((cat.amount / totalExpenseForPercent) * 100)
-                  const color = CATEGORY_COLORS[cat.name] || "#94a3b8"
-                  return (
-                    <div key={cat.name} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-3.5 h-3.5 rounded-full shadow-sm" style={{ backgroundColor: color }} />
-                          <span className="text-sm font-bold text-slate-700">{cat.name}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-slate-800">฿{cat.amount.toLocaleString()}</span>
-                          <span className="text-[10px] font-extrabold text-slate-400 bg-white/60 px-2 py-0.5 rounded-full border border-slate-100">{percent}%</span>
-                        </div>
-                      </div>
-                      <div className="w-full bg-slate-200/60 rounded-full h-3 overflow-hidden border border-slate-100 shadow-inner">
-                        <div
-                          className="h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
-                          style={{ width: `${percent}%`, backgroundColor: color }}
-                        />
-                      </div>
+            <div className="rounded-[2.25rem] border border-slate-200 bg-white/95 p-4 md:p-6 shadow-[0_6px_18px_rgba(15,23,42,0.1)]">
+              {chartMode === "bar" ? (
+                filter === "day" ? (
+                  <div className="flex min-h-[300px] items-center justify-center rounded-[1.75rem] bg-[#F8F7F2] text-center">
+                    <div className="space-y-2 px-6">
+                      <p className="text-lg font-extrabold text-slate-800">แผนภูมิแท่งใช้ได้กับมุมมองเดือนและปี</p>
+                      <p className="text-sm font-medium text-slate-500">เปลี่ยนตัวกรองด้านบนเป็นเดือนหรือปีเพื่อดูกราฟเปรียบเทียบรายรับและรายจ่าย</p>
                     </div>
-                  )
-                })}
+                  </div>
+                ) : (
+                  <div className="h-[320px] md:h-[340px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={data.chartData} barGap={8} barCategoryGap="28%" margin={{ top: 14, right: 12, left: 0, bottom: 0 }}>
+                        <CartesianGrid vertical={false} stroke="#E9E5DB" />
+                        <XAxis
+                          dataKey="label"
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fill: "#292524", fontSize: 12, fontWeight: 500 }}
+                          dy={10}
+                        />
+                        <YAxis
+                          axisLine={false}
+                          tickLine={false}
+                          width={46}
+                          tick={{ fill: "#292524", fontSize: 12, fontWeight: 500 }}
+                          tickFormatter={(value) => `฿${value >= 1000 ? `${Math.round(value / 1000)}k` : value}`}
+                        />
+                        <Tooltip
+                          cursor={{ fill: "rgba(0,0,0,0)" }}
+                          content={({ active, label, payload }) => {
+                            if (!active || !payload || payload.length === 0) return null
 
-                {data.categories.filter(c => c.type === "income").length > 0 && (
-                  <>
-                    <div className="border-t border-slate-200 my-6 opacity-60" />
-                    <h4 className="text-xs font-bold text-slate-500 mb-4 flex items-center gap-1.5 uppercase tracking-wider">
-                      <TrendingUpIcon className="h-3.5 w-3.5 text-emerald-500" /> หมวดหมู่รายรับ
-                    </h4>
-                    {data.categories.filter(c => c.type === "income").map(cat => {
-                      const totalIncomeForPercent = data.categories.filter(c => c.type === "income").reduce((s, c) => s + c.amount, 0) || 1
-                      const percent = Math.round((cat.amount / totalIncomeForPercent) * 100)
-                      const color = CATEGORY_COLORS[cat.name] || "#6EE7B7"
+                            const items = payload.filter(
+                              (item): item is typeof item & { value: number; color: string; dataKey: string } =>
+                                typeof item.value === "number" && item.value > 0 && typeof item.color === "string" && typeof item.dataKey === "string"
+                            )
+
+                            if (items.length === 0) return null
+
+                            return (
+                              <div className="space-y-3">
+                                {items.map(item => (
+                                  <div
+                                    key={item.dataKey}
+                                    className="min-w-[104px] rounded-[1.6rem] border border-slate-200 bg-white px-4 py-3 shadow-[0_10px_22px_rgba(15,23,42,0.16)]"
+                                  >
+                                    <p className="text-sm font-semibold text-slate-900">{formatBarTooltipLabel(label ?? "")}</p>
+                                    <p className="mt-1 text-[1.05rem] font-extrabold" style={{ color: item.color }}>
+                                      ฿{item.value.toLocaleString()}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            )
+                          }}
+                        />
+                        <Bar dataKey="income" fill="#159A61" radius={[999, 999, 0, 0]} maxBarSize={filter === "month" ? 8 : 22} />
+                        <Bar dataKey="expense" fill="#FF1616" radius={[999, 999, 0, 0]} maxBarSize={filter === "month" ? 8 : 22} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )
+              ) : pieTotal === 0 ? (
+                <div className="flex min-h-[300px] items-center justify-center rounded-[1.75rem] bg-[#F8F7F2] text-center">
+                  <div className="space-y-2 px-6">
+                    <p className="text-lg font-extrabold text-slate-800">ยังไม่มีข้อมูลสำหรับแผนภูมิวงกลม</p>
+                    <p className="text-sm font-medium text-slate-500">เพิ่มรายการรายรับหรือรายจ่ายก่อน แล้วค่อยกลับมาดูสัดส่วนในช่วงเวลานี้</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_220px] md:items-center">
+                  <div className="h-[320px] md:h-[360px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Tooltip
+                          formatter={(value) => [`฿${Number(value ?? 0).toLocaleString()}`, ""]}
+                          contentStyle={{ borderRadius: "20px", border: "1px solid #E7E5E4", boxShadow: "0 12px 24px rgba(15,23,42,0.12)" }}
+                        />
+                        <Pie
+                          data={pieData}
+                          dataKey="value"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={140}
+                          stroke="#1D86FF"
+                          strokeWidth={2}
+                          labelLine={false}
+                          label={({ cx, cy, midAngle, innerRadius, outerRadius, name, percent }: {
+                            cx?: number
+                            cy?: number
+                            midAngle?: number
+                            innerRadius?: number
+                            outerRadius?: number
+                            name?: string
+                            percent?: number
+                          }) => {
+                            if (
+                              typeof cx !== "number" ||
+                              typeof cy !== "number" ||
+                              typeof midAngle !== "number" ||
+                              typeof innerRadius !== "number" ||
+                              typeof outerRadius !== "number" ||
+                              typeof name !== "string" ||
+                              !percent
+                            ) {
+                              return null
+                            }
+
+                            const radius = innerRadius + (outerRadius - innerRadius) * 0.55
+                            const x = cx + radius * Math.cos((-midAngle * Math.PI) / 180)
+                            const y = cy + radius * Math.sin((-midAngle * Math.PI) / 180)
+
+                            return (
+                              <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="middle" className="text-xl font-extrabold">
+                                {name}
+                              </text>
+                            )
+                          }}
+                        >
+                          {pieData.map(item => (
+                            <Cell key={item.name} fill={item.color} />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  <div className="space-y-8 px-4 md:px-0">
+                    {pieData.map(item => {
+                      const percent = pieTotal === 0 ? 0 : Math.round((item.value / pieTotal) * 100)
+
                       return (
-                        <div key={cat.name} className="space-y-2">
-                          <div className="flex items-center justify-between">
+                        <div key={item.name} className="flex items-center gap-4">
+                          <div className="h-4 w-4 rounded-full" style={{ backgroundColor: item.color }} />
+                          <p className="text-2xl font-extrabold text-slate-900">
+                            {item.name} {percent}%
+                          </p>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="mb-6 rounded-[2rem] bg-[#F5F4F1] p-6 shadow-inner">
+            <h3 className="mb-5 text-[1.15rem] font-extrabold tracking-tight text-slate-800">เปรียบเทียบตามหมวดหมู่</h3>
+            {data.categories.length === 0 ? (
+              <p className="py-8 text-center text-sm font-medium italic text-slate-400">ยังไม่มีข้อมูลสำหรับการเปรียบเทียบ</p>
+            ) : (
+              <div className="space-y-6">
+                <div className="space-y-5">
+                  {data.categories.filter(category => category.type === "expense").map(category => {
+                    const percent = Math.round((category.amount / totalExpenseForPercent) * 100)
+                    const color = CATEGORY_COLORS[category.name] || "#94a3b8"
+
+                    return (
+                      <div key={`expense-${category.name}`} className="space-y-2">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2.5">
+                            <div className="h-3.5 w-3.5 rounded-full shadow-sm" style={{ backgroundColor: color }} />
+                            <span className="text-sm font-bold text-slate-700">{category.name}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-slate-800">฿{category.amount.toLocaleString()}</span>
+                            <span className="rounded-full border border-slate-100 bg-white/70 px-2 py-0.5 text-[10px] font-extrabold text-slate-400">{percent}%</span>
+                          </div>
+                        </div>
+                        <div className="h-3 overflow-hidden rounded-full border border-slate-100 bg-slate-200/60 shadow-inner">
+                          <div
+                            className="h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
+                            style={{ width: `${percent}%`, backgroundColor: color }}
+                          />
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {data.categories.some(category => category.type === "income") && (
+                  <div className="space-y-5 border-t border-slate-200/80 pt-6">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">หมวดหมู่รายรับ</h4>
+                    {data.categories.filter(category => category.type === "income").map(category => {
+                      const percent = Math.round((category.amount / totalIncomeForPercent) * 100)
+                      const color = CATEGORY_COLORS[category.name] || "#6EE7B7"
+
+                      return (
+                        <div key={`income-${category.name}`} className="space-y-2">
+                          <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-2.5">
-                              <div className="w-3.5 h-3.5 rounded-full shadow-sm" style={{ backgroundColor: color }} />
-                              <span className="text-sm font-bold text-slate-700">{cat.name}</span>
+                              <div className="h-3.5 w-3.5 rounded-full shadow-sm" style={{ backgroundColor: color }} />
+                              <span className="text-sm font-bold text-slate-700">{category.name}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-emerald-600">+฿{cat.amount.toLocaleString()}</span>
-                              <span className="text-[10px] font-extrabold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">{percent}%</span>
+                              <span className="text-sm font-bold text-emerald-600">฿{category.amount.toLocaleString()}</span>
+                              <span className="rounded-full border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[10px] font-extrabold text-emerald-500">{percent}%</span>
                             </div>
                           </div>
-                          <div className="w-full bg-slate-200/60 rounded-full h-3 overflow-hidden border border-slate-100 shadow-inner">
+                          <div className="h-3 overflow-hidden rounded-full border border-slate-100 bg-slate-200/60 shadow-inner">
                             <div
                               className="h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
                               style={{ width: `${percent}%`, backgroundColor: color }}
@@ -384,7 +544,7 @@ export default function SummaryPage() {
                         </div>
                       )
                     })}
-                  </>
+                  </div>
                 )}
               </div>
             )}
@@ -394,7 +554,7 @@ export default function SummaryPage() {
           <div className="bg-white rounded-[2rem] p-6 shadow-[0_2px_15px_rgba(0,0,0,0.02)] border border-white">
             <div className="flex items-center justify-between mb-5">
               <h3 className="font-extrabold text-slate-800 text-lg tracking-tight">
-                รายการล่าสุด {data.transactions.length > 10 ? `(แสดง 10 จาก ${data.transactions.length})` : ""}
+                รายการล่าสุด {data.transactions.length > transactionsPerPage ? `(แสดง ${transactionRangeStart}-${transactionRangeEnd} จาก ${data.transactions.length})` : ""}
               </h3>
               <div className="text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
                 {data.transactions.length} รายการ
@@ -405,7 +565,7 @@ export default function SummaryPage() {
               <p className="text-center text-slate-400 py-10 text-sm font-medium italic">ไม่มีรายการธุรกรรมในช่วงเวลานี้</p>
             ) : (
               <div className="space-y-2">
-                {data.transactions.slice(0, 10).map((t, index) => (
+                {paginatedTransactions.map((t) => (
                   <div
                     key={t.id}
                     className="flex items-center justify-between py-4 px-2 hover:bg-slate-50 rounded-2xl transition-all border-b border-slate-50 last:border-0 group"
@@ -436,6 +596,12 @@ export default function SummaryPage() {
                 ))}
               </div>
             )}
+
+            <PaginationControls
+              currentPage={transactionPage}
+              totalPages={totalTransactionPages}
+              onPageChange={setTransactionPage}
+            />
           </div>
         </>
       ) : null}

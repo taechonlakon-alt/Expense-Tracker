@@ -6,6 +6,7 @@ import Link from "next/link"
 import dayjs from "@/lib/dayjs"
 import { TransactionActions } from "@/components/home/TransactionActions"
 import { EmptyState } from "@/components/shared/EmptyState"
+import { PaginationControls } from "@/components/shared/PaginationControls"
 import { TransactionFormModal } from "@/components/home/TransactionFormModal"
 import { DateNavigator } from "@/components/home/DateNavigator"
 
@@ -28,11 +29,13 @@ function getCategoryIcon(type: string, category: string) {
 }
 
 export default function Home() {
+  const transactionsPerPage = 10
   const [selectedDate, setSelectedDate] = useState(dayjs())
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [modalType, setModalType] = useState<"income" | "expense">("income")
+  const [transactionPage, setTransactionPage] = useState(1)
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -48,6 +51,10 @@ export default function Home() {
   }, [selectedDate])
 
   useEffect(() => { fetchData() }, [fetchData])
+
+  useEffect(() => {
+    setTransactionPage(1)
+  }, [selectedDate])
 
   const handleOpenModal = (type: "income" | "expense") => {
     setModalType(type)
@@ -67,6 +74,17 @@ export default function Home() {
     if (t.type === "expense") totalExpense += t.amount
   })
   const balance = totalIncome - totalExpense
+  const totalTransactionPages = Math.max(1, Math.ceil(transactions.length / transactionsPerPage))
+  const paginatedTransactions = transactions.slice(
+    (transactionPage - 1) * transactionsPerPage,
+    transactionPage * transactionsPerPage
+  )
+
+  useEffect(() => {
+    if (transactionPage > totalTransactionPages) {
+      setTransactionPage(totalTransactionPages)
+    }
+  }, [transactionPage, totalTransactionPages])
 
   return (
     <div className="flex flex-col gap-2">
@@ -155,7 +173,7 @@ export default function Home() {
               title={selectedDate.isSame(dayjs(), 'day') ? "ยังไม่มีรายการสำหรับวันนี้" : `ยังไม่มีรายการสำหรับวันที่ ${selectedDate.format('D MMM')}`} 
               description="เริ่มต้นบันทึกรายรับรายจ่ายของคุณ ด้วยการกดปุ่มด้านบนเลย!" 
             />
-          ) : transactions.map((t, index) => (
+          ) : paginatedTransactions.map((t, index) => (
             <div key={t.id} className={`flex items-center justify-between rounded-3xl bg-white p-4 md:p-5 px-5 md:px-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-slate-100 transition-all hover:shadow-md opacity-0 animate-slide-up stagger-${Math.min(index + 1, 5)}`}>
               <div className="flex items-center gap-3 md:gap-4">
                 <div className={`flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-full ${t.type === 'income' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
@@ -175,6 +193,12 @@ export default function Home() {
             </div>
           ))}
         </div>
+
+        <PaginationControls
+          currentPage={transactionPage}
+          totalPages={totalTransactionPages}
+          onPageChange={setTransactionPage}
+        />
       </div>
 
       <TransactionFormModal 

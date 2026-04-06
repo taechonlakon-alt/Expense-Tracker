@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { MoreVertical, Edit2, Trash2 } from "lucide-react"
@@ -8,7 +8,16 @@ import { TransactionFormModal } from "./TransactionFormModal"
 import { toast } from "sonner"
 import dayjs from "@/lib/dayjs"
 
-export function TransactionActions({ transaction, onRefresh }: { transaction: any; onRefresh?: () => void }) {
+interface TransactionActionItem {
+  id: number
+  type: string
+  amount: number
+  category: string
+  note: string | null
+  transactionDate: string | Date
+}
+
+export function TransactionActions({ transaction, onRefresh }: { transaction: TransactionActionItem; onRefresh?: () => void }) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -22,7 +31,7 @@ export function TransactionActions({ transaction, onRefresh }: { transaction: an
       if (!res.ok) throw new Error("Failed to delete")
       toast.success("ลบรายการสำเร็จ")
       if (onRefresh) onRefresh()
-    } catch (error) {
+    } catch {
       toast.error("เกิดข้อผิดพลาดในการลบรายการ")
     } finally {
       setIsDeleting(false)
@@ -32,6 +41,7 @@ export function TransactionActions({ transaction, onRefresh }: { transaction: an
 
   const editData = {
     ...transaction,
+    note: transaction.note || "",
     date: dayjs(transaction.transactionDate).tz("Asia/Bangkok").format('YYYY-MM-DD'),
     time: dayjs(transaction.transactionDate).tz("Asia/Bangkok").format('HH:mm'),
   }
@@ -63,7 +73,7 @@ export function TransactionActions({ transaction, onRefresh }: { transaction: an
       <TransactionFormModal 
         isOpen={isEditModalOpen} 
         onClose={() => setIsEditModalOpen(false)} 
-        type={transaction.type}
+        type={transaction.type as "income" | "expense"}
         editData={editData}
       />
 
