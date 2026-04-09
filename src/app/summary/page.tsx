@@ -22,6 +22,7 @@ interface SummaryData {
   categories: { name: string; amount: number; type: string }[]
   chartData: { label: string; income: number; expense: number }[]
   transactions: { id: number; type: string; amount: number; category: string; note: string | null; transactionDate: string }[]
+  totalTransactionCount: number
 }
 
 function getCategoryIcon(type: string, category: string) {
@@ -44,7 +45,14 @@ export default function SummaryPage() {
   const fetchSummary = useCallback(async () => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/summary?filter=${filter}&date=${currentDate.format("YYYY-MM-DD")}`)
+      const params = new URLSearchParams({
+        filter,
+        date: currentDate.format("YYYY-MM-DD"),
+        page: transactionPage.toString(),
+        pageSize: transactionsPerPage.toString(),
+      })
+
+      const res = await fetch(`/api/summary?${params.toString()}`)
       const json = await res.json()
       setData(json)
     } catch (err) {
@@ -52,7 +60,7 @@ export default function SummaryPage() {
     } finally {
       setLoading(false)
     }
-  }, [filter, currentDate])
+  }, [currentDate, filter, transactionPage])
 
   useEffect(() => {
     fetchSummary()
@@ -93,14 +101,11 @@ export default function SummaryPage() {
   const totalIncomeForPercent = data?.categories
     .filter(category => category.type === "income")
     .reduce((sum, category) => sum + category.amount, 0) || 1
-  const totalTransactionPages = Math.max(1, Math.ceil((data?.transactions.length || 0) / transactionsPerPage))
-  const paginatedTransactions = data?.transactions.slice(
-    (transactionPage - 1) * transactionsPerPage,
-    transactionPage * transactionsPerPage
-  ) || []
-  const transactionRangeStart = data?.transactions.length ? (transactionPage - 1) * transactionsPerPage + 1 : 0
-  const transactionRangeEnd = data?.transactions.length
-    ? Math.min(transactionPage * transactionsPerPage, data.transactions.length)
+  const totalTransactionCount = data?.totalTransactionCount || 0
+  const totalTransactionPages = Math.max(1, Math.ceil(totalTransactionCount / transactionsPerPage))
+  const transactionRangeStart = totalTransactionCount ? (transactionPage - 1) * transactionsPerPage + 1 : 0
+  const transactionRangeEnd = totalTransactionCount
+    ? Math.min(transactionPage * transactionsPerPage, totalTransactionCount)
     : 0
 
   useEffect(() => {
@@ -554,10 +559,10 @@ export default function SummaryPage() {
           <div className="bg-white rounded-[2rem] p-6 shadow-[0_2px_15px_rgba(0,0,0,0.02)] border border-white">
             <div className="flex items-center justify-between mb-5">
               <h3 className="font-extrabold text-slate-800 text-lg tracking-tight">
-                รายการล่าสุด {data.transactions.length > transactionsPerPage ? `(แสดง ${transactionRangeStart}-${transactionRangeEnd} จาก ${data.transactions.length})` : ""}
+                รายการล่าสุด {totalTransactionCount > 0 ? `(แสดง ${transactionRangeStart}-${transactionRangeEnd} จาก ${totalTransactionCount})` : ""}
               </h3>
               <div className="text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
-                {data.transactions.length} รายการ
+                {totalTransactionCount} รายการ
               </div>
             </div>
             
@@ -565,7 +570,7 @@ export default function SummaryPage() {
               <p className="text-center text-slate-400 py-10 text-sm font-medium italic">ไม่มีรายการธุรกรรมในช่วงเวลานี้</p>
             ) : (
               <div className="space-y-2">
-                {paginatedTransactions.map((t) => (
+                {data.transactions.map((t) => (
                   <div
                     key={t.id}
                     className="flex items-center justify-between py-4 px-2 hover:bg-slate-50 rounded-2xl transition-all border-b border-slate-50 last:border-0 group"

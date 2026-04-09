@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+
 import dayjs from "@/lib/dayjs";
+import prisma from "@/lib/prisma";
+
+function parsePositiveInt(value: string | null, fallback: number) {
+  const parsed = Number.parseInt(value ?? "", 10);
+  return Number.isNaN(parsed) || parsed <= 0 ? fallback : parsed;
+}
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const filterType = searchParams.get("filter") || "month"; // day, month, year
+    const filterType = searchParams.get("filter") || "month";
     const dateParam = searchParams.get("date") || dayjs().format("YYYY-MM-DD");
+    const page = parsePositiveInt(searchParams.get("page"), 1);
+    const pageSize = parsePositiveInt(searchParams.get("pageSize"), 10);
 
     const baseDate = dayjs(dateParam);
     let startDate: Date;
@@ -23,28 +31,45 @@ export async function GET(request: NextRequest) {
       endDate = baseDate.endOf("month").toDate();
     }
 
-    const transactions = await prisma.transaction.findMany({
-      where: {
-        transactionDate: {
-          gte: startDate,
-          lte: endDate,
-        },
+    const where = {
+      transactionDate: {
+        gte: startDate,
+        lte: endDate,
       },
-      orderBy: { transactionDate: "desc" },
-    });
+    };
+
+    const [summaryTransactions, paginatedTransactions, totalTransactionCount] = await Promise.all([
+      prisma.transaction.findMany({
+        where,
+        select: {
+          type: true,
+          amount: true,
+          category: true,
+          transactionDate: true,
+        },
+      }),
+      prisma.transaction.findMany({
+        where,
+        orderBy: { transactionDate: "desc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.transaction.count({ where }),
+    ]);
 
     let totalIncome = 0;
     let totalExpense = 0;
     const categoryMap: Record<string, { amount: number; type: string }> = {};
 
-    transactions.forEach((t: { type: string; amount: number; category: string }) => {
-      if (t.type === "income") totalIncome += t.amount;
-      if (t.type === "expense") totalExpense += t.amount;
+    summaryTransactions.forEach((transaction) => {
+      if (transaction.type === "income") totalIncome += transaction.amount;
+      if (transaction.type === "expense") totalExpense += transaction.amount;
 
-      if (!categoryMap[t.category]) {
-        categoryMap[t.category] = { amount: 0, type: t.type };
+      if (!categoryMap[transaction.category]) {
+        categoryMap[transaction.category] = { amount: 0, type: transaction.type };
       }
-      categoryMap[t.category].amount += t.amount;
+
+      categoryMap[transaction.category].amount += transaction.amount;
     });
 
     const categories = Object.entries(categoryMap)
@@ -53,32 +78,30 @@ export async function GET(request: NextRequest) {
         amount: data.amount,
         type: data.type,
       }))
-      .sort((a, b) => b.amount - a.amount);
+      .sort((left, right) => right.amount - left.amount);
 
-    // Build daily chart data
     const dailyMap: Record<string, { income: number; expense: number }> = {};
 
     if (filterType === "month") {
       const daysInMonth = baseDate.daysInMonth();
-      for (let i = 1; i <= daysInMonth; i++) {
-        const key = i.toString();
-        dailyMap[key] = { income: 0, expense: 0 };
+      for (let day = 1; day <= daysInMonth; day += 1) {
+        dailyMap[day.toString()] = { income: 0, expense: 0 };
       }
-      transactions.forEach((t: { type: string; amount: number; transactionDate: Date }) => {
-        const day = dayjs(t.transactionDate).tz("Asia/Bangkok").date().toString();
-        if (!dailyMap[day]) dailyMap[day] = { income: 0, expense: 0 };
-        if (t.type === "income") dailyMap[day].income += t.amount;
-        if (t.type === "expense") dailyMap[day].expense += t.amount;
+
+      summaryTransactions.forEach((transaction) => {
+        const day = dayjs(transaction.transactionDate).tz("Asia/Bangkok").date().toString();
+        if (transaction.type === "income") dailyMap[day].income += transaction.amount;
+        if (transaction.type === "expense") dailyMap[day].expense += transaction.amount;
       });
     } else if (filterType === "year") {
-      for (let i = 1; i <= 12; i++) {
-        dailyMap[i.toString()] = { income: 0, expense: 0 };
+      for (let month = 1; month <= 12; month += 1) {
+        dailyMap[month.toString()] = { income: 0, expense: 0 };
       }
-      transactions.forEach((t: { type: string; amount: number; transactionDate: Date }) => {
-        const month = (dayjs(t.transactionDate).tz("Asia/Bangkok").month() + 1).toString();
-        if (!dailyMap[month]) dailyMap[month] = { income: 0, expense: 0 };
-        if (t.type === "income") dailyMap[month].income += t.amount;
-        if (t.type === "expense") dailyMap[month].expense += t.amount;
+
+      summaryTransactions.forEach((transaction) => {
+        const month = (dayjs(transaction.transactionDate).tz("Asia/Bangkok").month() + 1).toString();
+        if (transaction.type === "income") dailyMap[month].income += transaction.amount;
+        if (transaction.type === "expense") dailyMap[month].expense += transaction.amount;
       });
     }
 
@@ -94,7 +117,8 @@ export async function GET(request: NextRequest) {
       balance: totalIncome - totalExpense,
       categories,
       chartData,
-      transactions,
+      transactions: paginatedTransactions,
+      totalTransactionCount,
     });
   } catch (error) {
     console.error(error);

@@ -29,6 +29,7 @@ model Transaction {
 
 model Debt {
   id            Int        @id @default(autoincrement())
+  customerId    Int
   customerName  String
   customerPhone String
   amount        Float
@@ -38,8 +39,24 @@ model Debt {
   paidAt        DateTime?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
+  customer      Customer   @relation(fields: [customerId], references: [id], onDelete: Restrict)
 
   @@index([status, debtDate(sort: Desc)])
+  @@index([customerId, status, debtDate(sort: Desc)])
   @@index([customerName])
   @@index([customerPhone])
+}
+
+model Customer {
+  id          Int      @id @default(autoincrement())
+  name        String
+  phone       String
+  note        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  debts       Debt[]
+
+  @@unique([name, phone])
+  @@index([name])
+  @@index([phone])
 }
