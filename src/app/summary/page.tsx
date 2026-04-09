@@ -8,6 +8,7 @@ import { th } from "date-fns/locale"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
 import dayjs from "@/lib/dayjs"
 import { TransactionActions } from "@/components/home/TransactionActions"
+import { BackupPanel } from "@/components/summary/BackupPanel"
 import { PaginationControls } from "@/components/shared/PaginationControls"
 
 // dayjs locale and plugins are set in lib/dayjs
@@ -259,6 +260,8 @@ export default function SummaryPage() {
           <Download className="h-4 w-4 stroke-[2.5]" />
           ดาวน์โหลด CSV ประจำ{filter === "day" ? "วัน" : filter === "month" ? "เดือน" : "ปี"}นี้
         </button>
+
+        <BackupPanel onRestoreSuccess={refreshData} />
       </div>
 
       {/* States */}
