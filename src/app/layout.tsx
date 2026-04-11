@@ -25,11 +25,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${kanit.variable} font-sans antialiased min-h-screen flex flex-col bg-[#FDFCF8] text-slate-800 pb-[80px] md:pb-0`}
+        className={`${kanit.variable} font-sans antialiased min-h-screen flex flex-col bg-[#FDFCF8] text-slate-800 pb-[68px] md:pb-0`}
       >
         <AuthProvider>
           <Navbar />
-          <main className="flex-1 w-full max-w-2xl mx-auto px-4 py-2">
+          <main className="flex-1 w-full max-w-2xl mx-auto px-3 sm:px-4 py-2">
             {children}
           </main>
           <BottomNav />

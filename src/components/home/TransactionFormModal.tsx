@@ -112,7 +112,7 @@ export function TransactionFormModal({ isOpen, onClose, type, editData }: Transa
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md bg-[#FAFAFA] rounded-3xl p-4 md:p-6 border-0 shadow-lg max-h-[96vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-md bg-[#FAFAFA] rounded-t-3xl sm:rounded-3xl p-4 md:p-6 border-0 shadow-lg max-h-[100dvh] sm:max-h-[96vh] overflow-y-auto fixed bottom-0 sm:bottom-auto sm:top-[50%] sm:translate-y-[-50%] w-full sm:w-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-extrabold text-center text-slate-800">
              {editData ? "แก้ไข" : "เพิ่ม"}{type === "income" ? "รายรับ" : "รายจ่าย"}
@@ -127,11 +127,11 @@ export function TransactionFormModal({ isOpen, onClose, type, editData }: Transa
               step="1.00"
               required
               placeholder="0.00"
-              className="w-full text-4xl xs:text-5xl md:text-6xl font-extrabold text-slate-800 border-none bg-white rounded-2xl p-4 md:p-5 shadow-sm focus:ring-2 focus:ring-emerald-500 transition-all outline-none"
+              className="w-full text-3xl sm:text-4xl md:text-6xl font-extrabold text-slate-800 border-none bg-white rounded-2xl p-3 sm:p-4 md:p-5 shadow-sm focus:ring-2 focus:ring-emerald-500 transition-all outline-none"
               value={formData.amount}
               onChange={(e) => setFormData({...formData, amount: e.target.value})}
             />
-            <div className="grid grid-cols-3 gap-2 pt-2">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2 pt-2">
               {[1000, 500, 100, 50, 20, 10, 5, 2, 1].map((val) => (
                 <button
                   key={val}
@@ -140,7 +140,7 @@ export function TransactionFormModal({ isOpen, onClose, type, editData }: Transa
                     const current = parseFloat(formData.amount) || 0;
                     setFormData({...formData, amount: (current + val).toString()});
                   }}
-                  className={`py-2.5 text-sm font-semibold rounded-xl transition-all active:scale-95 shadow-sm ${type === 'income' ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700' : 'bg-rose-50 hover:bg-rose-100 text-rose-700'}`}
+                  className={`py-3 text-sm font-semibold rounded-xl transition-all active:scale-95 shadow-sm ${type === 'income' ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700' : 'bg-rose-50 hover:bg-rose-100 text-rose-700'}`}
                 >
                   +{val}
                 </button>
@@ -151,7 +151,7 @@ export function TransactionFormModal({ isOpen, onClose, type, editData }: Transa
           <div className="space-y-2">
             <label className="text-sm font-bold text-slate-600">หมวดหมู่</label>
             <select 
-              className="w-full bg-white border border-slate-100 rounded-xl p-4 text-base font-semibold text-slate-700 outline-none focus:border-emerald-500 shadow-sm appearance-none cursor-pointer"
+              className="w-full bg-white border border-slate-100 rounded-xl p-3 sm:p-4 text-base font-semibold text-slate-700 outline-none focus:border-emerald-500 shadow-sm appearance-none cursor-pointer"
               value={formData.category}
               onChange={(e) => setFormData({...formData, category: e.target.value})}
             >
@@ -167,7 +167,7 @@ export function TransactionFormModal({ isOpen, onClose, type, editData }: Transa
               <input 
                 type="date" 
                 required
-                className="w-full bg-white border border-slate-100 rounded-xl p-4 text-base font-semibold text-slate-700 outline-none focus:border-emerald-500 shadow-sm"
+                className="w-full bg-white border border-slate-100 rounded-xl p-3 sm:p-4 text-base font-semibold text-slate-700 outline-none focus:border-emerald-500 shadow-sm"
                 value={formData.date}
                 onChange={(e) => setFormData({...formData, date: e.target.value})}
               />
@@ -177,7 +177,7 @@ export function TransactionFormModal({ isOpen, onClose, type, editData }: Transa
               <input 
                 type="time" 
                 required
-                className="w-full bg-white border border-slate-100 rounded-xl p-4 text-base font-semibold text-slate-700 outline-none focus:border-emerald-500 shadow-sm"
+                className="w-full bg-white border border-slate-100 rounded-xl p-3 sm:p-4 text-base font-semibold text-slate-700 outline-none focus:border-emerald-500 shadow-sm"
                 value={formData.time}
                 onChange={(e) => setFormData({...formData, time: e.target.value})}
               />
@@ -189,7 +189,7 @@ export function TransactionFormModal({ isOpen, onClose, type, editData }: Transa
             <input 
               type="text" 
               placeholder="รายละเอียดเพิ่มเติม... ถ้าเป็นประเภทอื่นๆ"
-              className="w-full bg-white border border-slate-100 rounded-xl p-4 text-base text-slate-700 outline-none focus:border-emerald-500 shadow-sm"
+              className="w-full bg-white border border-slate-100 rounded-xl p-3 sm:p-4 text-base text-slate-700 outline-none focus:border-emerald-500 shadow-sm"
               value={formData.note}
               onChange={(e) => setFormData({...formData, note: e.target.value})}
             />
@@ -198,7 +198,7 @@ export function TransactionFormModal({ isOpen, onClose, type, editData }: Transa
           <button 
             type="submit" 
             disabled={loading}
-            className={`w-full mt-6 md:mt-8 py-4 md:py-5 rounded-full font-bold text-white text-lg md:text-xl shadow-md transition-transform hover:scale-[1.02] active:scale-[0.98] ${type === 'income' ? 'bg-emerald-500 shadow-emerald-500/30 hover:bg-emerald-600' : 'bg-rose-500 shadow-rose-500/30 hover:bg-rose-600'}`}
+            className={`w-full mt-4 sm:mt-6 md:mt-8 py-4 md:py-5 rounded-full font-bold text-white text-lg md:text-xl shadow-md transition-transform hover:scale-[1.02] active:scale-[0.98] ${type === 'income' ? 'bg-emerald-500 shadow-emerald-500/30 hover:bg-emerald-600' : 'bg-rose-500 shadow-rose-500/30 hover:bg-rose-600'}`}
           >
             {loading ? "กำลังบันทึก..." : "บันทึกข้อมูล"}
           </button>

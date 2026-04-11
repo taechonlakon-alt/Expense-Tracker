@@ -141,18 +141,18 @@ export default function SummaryPage() {
   return (
     <div className="flex flex-col pb-8 pt-2 animate-in slide-in-from-right-4 duration-500">
       {/* Header + Filter Tabs */}
-      <div className="space-y-6 px-1">
-        <div className="flex items-center justify-between">
-          <div className="mt-2">
-            <h1 className="text-3xl lg:text-4xl font-extrabold text-[#365058]">สรุปผล</h1>
-            <p className="text-sm font-medium text-slate-500 mt-1 tracking-tight">ภาพรวมการเงินของคุณ</p>
+      <div className="space-y-4 sm:space-y-6 px-1">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-1 sm:mt-2">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#365058]">สรุปผล</h1>
+            <p className="text-xs sm:text-sm font-medium text-slate-500 mt-0.5 sm:mt-1 tracking-tight">ภาพรวมการเงินของคุณ</p>
           </div>
-          <div className="flex bg-[#F2F0E9] rounded-full p-1 shadow-inner border border-slate-100">
+          <div className="flex bg-[#F2F0E9] rounded-full p-1 shadow-inner border border-slate-100 w-full sm:w-auto">
             {(["day", "month", "year"] as FilterType[]).map(f => (
               <button 
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${filter === f ? "bg-white text-[#42646D] shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
+                className={`flex-1 sm:flex-none px-4 py-2 sm:py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${filter === f ? "bg-white text-[#42646D] shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
               >
                 {f === "day" ? "วัน" : f === "month" ? "เดือน" : "ปี"}
               </button>
@@ -255,7 +255,7 @@ export default function SummaryPage() {
 
         <button
           onClick={handleExportCSV}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white border border-slate-100 shadow-sm text-sm font-bold text-[#42646D] hover:bg-[#EAF0F6] transition-all active:scale-[0.98]"
+          className="w-full flex items-center justify-center gap-2 py-2.5 sm:py-3 rounded-2xl bg-white border border-slate-100 shadow-sm text-xs sm:text-sm font-bold text-[#42646D] hover:bg-[#EAF0F6] transition-all active:scale-[0.98]"
         >
           <Download className="h-4 w-4 stroke-[2.5]" />
           ดาวน์โหลด CSV ประจำ{filter === "day" ? "วัน" : filter === "month" ? "เดือน" : "ปี"}นี้
@@ -277,72 +277,72 @@ export default function SummaryPage() {
       ) : data ? (
         <>
           {/* Summary Cards */}
-          <div className="space-y-4 my-6 px-1">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white rounded-[1.75rem] p-5 shadow-[0_2px_15px_rgba(0,0,0,0.02)] border border-white relative overflow-hidden transition-all hover:shadow-md">
+          <div className="space-y-3 sm:space-y-4 my-4 sm:my-6 px-1">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              <div className="bg-white rounded-[1.5rem] sm:rounded-[1.75rem] p-3.5 sm:p-5 shadow-[0_2px_15px_rgba(0,0,0,0.02)] border border-white relative overflow-hidden transition-all hover:shadow-md">
                 <div className="absolute -left-4 -top-4 w-20 h-20 bg-emerald-50 rounded-full blur-2xl opacity-70" />
-                <div className="flex items-center gap-2 mb-3 relative z-10">
-                  <div className="bg-emerald-100 p-2 rounded-full text-emerald-600">
-                    <Banknote className="h-5 w-5 stroke-[2.5]" />
+                <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3 relative z-10">
+                  <div className="bg-emerald-100 p-1.5 sm:p-2 rounded-full text-emerald-600">
+                    <Banknote className="h-4 w-4 sm:h-5 sm:w-5 stroke-[2.5]" />
                   </div>
-                  <span className="text-sm font-bold text-slate-600">รายรับ</span>
+                  <span className="text-xs sm:text-sm font-bold text-slate-600">รายรับ</span>
                 </div>
-                <div className="text-xl xs:text-2xl lg:text-3xl font-bold text-emerald-600 relative z-10">
+                <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-emerald-600 relative z-10">
                   ฿ {data.totalIncome.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </div>
               </div>
-              <div className="bg-white rounded-[1.75rem] p-5 shadow-[0_2px_15px_rgba(0,0,0,0.02)] border border-white relative overflow-hidden transition-all hover:shadow-md">
+              <div className="bg-white rounded-[1.5rem] sm:rounded-[1.75rem] p-3.5 sm:p-5 shadow-[0_2px_15px_rgba(0,0,0,0.02)] border border-white relative overflow-hidden transition-all hover:shadow-md">
                 <div className="absolute -right-4 -top-4 w-20 h-20 bg-rose-50 rounded-full blur-2xl opacity-70" />
-                <div className="flex items-center gap-2 mb-3 relative z-10">
-                  <div className="bg-rose-100 p-2 rounded-full text-rose-600">
-                    <Wallet className="h-5 w-5 stroke-[2.5]" />
+                <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3 relative z-10">
+                  <div className="bg-rose-100 p-1.5 sm:p-2 rounded-full text-rose-600">
+                    <Wallet className="h-4 w-4 sm:h-5 sm:w-5 stroke-[2.5]" />
                   </div>
-                  <span className="text-sm font-bold text-slate-600">รายจ่าย</span>
+                  <span className="text-xs sm:text-sm font-bold text-slate-600">รายจ่าย</span>
                 </div>
-                <div className="text-xl xs:text-2xl lg:text-3xl font-bold text-rose-600 relative z-10">
+                <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-rose-600 relative z-10">
                   ฿ {data.totalExpense.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </div>
               </div>
             </div>
 
-            <div className="bg-slate-800 rounded-[2rem] p-6 text-white shadow-lg relative overflow-hidden min-h-[140px] flex flex-col justify-center transition-all hover:shadow-xl">
+            <div className="bg-slate-800 rounded-[1.75rem] sm:rounded-[2rem] p-4 sm:p-6 text-white shadow-lg relative overflow-hidden min-h-[100px] sm:min-h-[140px] flex flex-col justify-center transition-all hover:shadow-xl">
               <div className="absolute -right-8 -bottom-16 w-48 h-48 bg-white/10 rounded-full blur-md" />
-              <div className="flex items-center gap-3 mb-2 relative z-10">
-                <div className="bg-white/20 p-2 rounded-full text-white">
-                  <PiggyBank className="h-6 w-6 stroke-[2.5]" />
+              <div className="flex items-center gap-2 sm:gap-3 mb-1.5 sm:mb-2 relative z-10">
+                <div className="bg-white/20 p-1.5 sm:p-2 rounded-full text-white">
+                  <PiggyBank className="h-5 w-5 sm:h-6 sm:w-6 stroke-[2.5]" />
                 </div>
-                <span className="text-sm font-bold text-white/90">เงินคงเหลือสุทธิ</span>
+                <span className="text-xs sm:text-sm font-bold text-white/90">เงินคงเหลือสุทธิ</span>
               </div>
-              <div className="text-3xl xs:text-4xl md:text-5xl font-extrabold tracking-tight relative z-10">
+              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight relative z-10">
                 ฿ {data.balance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </div>
-              {data.balance > 0 && <p className="text-sm font-medium text-white/80 mt-1 relative z-10 tracking-tight">คุณประหยัดเงินได้ดีมาก!</p>}
+              {data.balance > 0 && <p className="text-xs sm:text-sm font-medium text-white/80 mt-1 relative z-10 tracking-tight">คุณประหยัดเงินได้ดีมาก!</p>}
             </div>
           </div>
 
-          <div className="mb-6 space-y-4">
-            <div className="flex flex-wrap justify-end gap-3">
+          <div className="mb-4 sm:mb-6 space-y-3 sm:space-y-4">
+            <div className="flex flex-wrap justify-end gap-2 sm:gap-3">
               <button
                 onClick={() => setChartMode("bar")}
-                className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-extrabold shadow-[0_8px_16px_rgba(0,0,0,0.18)] transition-all ${
+                className={`inline-flex items-center gap-1.5 sm:gap-2 rounded-full px-3 sm:px-5 py-2 sm:py-3 text-xs sm:text-sm font-extrabold shadow-[0_8px_16px_rgba(0,0,0,0.18)] transition-all ${
                   chartMode === "bar" ? "bg-[#D3D4D7] text-slate-900" : "bg-white text-slate-900 hover:bg-slate-50"
                 }`}
               >
-                <ChartColumn className="h-5 w-5" />
+                <ChartColumn className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span>แผนภูมิแท่ง</span>
               </button>
               <button
                 onClick={() => setChartMode("pie")}
-                className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-extrabold shadow-[0_8px_16px_rgba(0,0,0,0.18)] transition-all ${
+                className={`inline-flex items-center gap-1.5 sm:gap-2 rounded-full px-3 sm:px-5 py-2 sm:py-3 text-xs sm:text-sm font-extrabold shadow-[0_8px_16px_rgba(0,0,0,0.18)] transition-all ${
                   chartMode === "pie" ? "bg-[#D3D4D7] text-slate-900" : "bg-white text-slate-900 hover:bg-slate-50"
                 }`}
               >
-                <ChartPie className="h-5 w-5" />
+                <ChartPie className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span>แผนภูมิวงกลม</span>
               </button>
             </div>
 
-            <div className="rounded-[2.25rem] border border-slate-200 bg-white/95 p-4 md:p-6 shadow-[0_6px_18px_rgba(15,23,42,0.1)]">
+            <div className="rounded-[1.75rem] sm:rounded-[2.25rem] border border-slate-200 bg-white/95 p-3 sm:p-4 md:p-6 shadow-[0_6px_18px_rgba(15,23,42,0.1)]">
               {chartMode === "bar" ? (
                 filter === "day" ? (
                   <div className="flex min-h-[300px] items-center justify-center rounded-[1.75rem] bg-[#F8F7F2] text-center">
@@ -490,8 +490,8 @@ export default function SummaryPage() {
             </div>
           </div>
 
-          <div className="mb-6 rounded-[2rem] bg-[#F5F4F1] p-6 shadow-inner">
-            <h3 className="mb-5 text-[1.15rem] font-extrabold tracking-tight text-slate-800">เปรียบเทียบตามหมวดหมู่</h3>
+          <div className="mb-4 sm:mb-6 rounded-[1.75rem] sm:rounded-[2rem] bg-[#F5F4F1] p-4 sm:p-6 shadow-inner">
+            <h3 className="mb-3 sm:mb-5 text-base sm:text-[1.15rem] font-extrabold tracking-tight text-slate-800">เปรียบเทียบตามหมวดหมู่</h3>
             {data.categories.length === 0 ? (
               <p className="py-8 text-center text-sm font-medium italic text-slate-400">ยังไม่มีข้อมูลสำหรับการเปรียบเทียบ</p>
             ) : (
@@ -559,13 +559,16 @@ export default function SummaryPage() {
           </div>
 
           {/* Full Transaction List */}
-          <div className="bg-white rounded-[2rem] p-6 shadow-[0_2px_15px_rgba(0,0,0,0.02)] border border-white">
-            <div className="flex items-center justify-between mb-5">
-              <h3 className="font-extrabold text-slate-800 text-lg tracking-tight">
-                รายการล่าสุด {totalTransactionCount > 0 ? `(แสดง ${transactionRangeStart}-${transactionRangeEnd} จาก ${totalTransactionCount})` : ""}
+          <div className="bg-white rounded-[1.75rem] sm:rounded-[2rem] p-4 sm:p-6 shadow-[0_2px_15px_rgba(0,0,0,0.02)] border border-white">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-5">
+              <h3 className="font-extrabold text-slate-800 text-base sm:text-lg tracking-tight">
+                รายการล่าสุด
               </h3>
-              <div className="text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
-                {totalTransactionCount} รายการ
+              <div className="flex items-center gap-2">
+                {totalTransactionCount > 0 && <span className="text-xs font-medium text-slate-400">แสดง {transactionRangeStart}-{transactionRangeEnd} จาก {totalTransactionCount}</span>}
+                <div className="text-xs font-bold text-slate-400 bg-slate-50 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-slate-100">
+                  {totalTransactionCount} รายการ
+                </div>
               </div>
             </div>
             
@@ -576,15 +579,15 @@ export default function SummaryPage() {
                 {data.transactions.map((t) => (
                   <div
                     key={t.id}
-                    className="flex items-center justify-between py-4 px-2 hover:bg-slate-50 rounded-2xl transition-all border-b border-slate-50 last:border-0 group"
+                    className="flex items-center justify-between py-3 sm:py-4 px-1 sm:px-2 hover:bg-slate-50 rounded-xl sm:rounded-2xl transition-all border-b border-slate-50 last:border-0 group"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className={`flex h-12 w-12 items-center justify-center rounded-full shadow-sm transition-transform group-hover:scale-110 ${t.type === "income" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"}`}>
+                    <div className="flex items-center gap-2.5 sm:gap-4 min-w-0 flex-1">
+                      <div className={`flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-full shadow-sm transition-transform group-hover:scale-110 ${t.type === "income" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"}`}>
                         {getCategoryIcon(t.type, t.category)}
                       </div>
-                      <div>
-                        <p className="font-bold text-slate-800 leading-tight">{t.note || t.category}</p>
-                        <p className="text-xs text-slate-400 font-bold mt-1">
+                      <div className="min-w-0">
+                        <p className="font-bold text-slate-800 leading-tight text-sm sm:text-base truncate">{t.note || t.category}</p>
+                        <p className="text-[10px] sm:text-xs text-slate-400 font-bold mt-0.5">
                           {filter === "year" 
                             ? dayjs(t.transactionDate).tz("Asia/Bangkok").format("D MMM HH:mm น.")
                             : filter === "day"
@@ -594,8 +597,8 @@ export default function SummaryPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <p className={`font-bold text-xl tracking-tight ${t.type === "income" ? "text-emerald-600" : "text-rose-600"}`}>
+                    <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                      <p className={`font-bold text-base sm:text-xl tracking-tight ${t.type === "income" ? "text-emerald-600" : "text-rose-600"}`}>
                         {t.type === "income" ? "+" : "-"}฿{t.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                       </p>
                       <TransactionActions transaction={t} onRefresh={refreshData} />

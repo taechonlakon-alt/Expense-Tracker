@@ -23,21 +23,21 @@ export function DateNavigator({ selectedDate, onChange }: DateNavigatorProps) {
   }
 
   return (
-    <div className="flex items-center justify-between bg-[#F2F0E9] rounded-3xl p-1.5 px-4 mb-4 shadow-inner border border-slate-100/50">
+    <div className="flex items-center justify-between bg-[#F2F0E9] rounded-2xl sm:rounded-3xl p-1 px-2 sm:px-4 mb-3 sm:mb-4 shadow-inner border border-slate-100/50">
       <button 
         onClick={() => navigate("prev")} 
-        className="p-2 hover:bg-white rounded-full text-slate-600 transition-all active:scale-90"
+        className="p-2.5 sm:p-2 hover:bg-white rounded-full text-slate-600 transition-all active:scale-90 min-w-[44px] min-h-[44px] flex items-center justify-center"
       >
         <ChevronLeft className="h-5 w-5 stroke-[2.5]" />
       </button>
       
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2">
         <Popover>
-          <PopoverTrigger className="flex flex-col items-center px-4 py-1.5 rounded-2xl hover:bg-white hover:shadow-sm transition-all focus:outline-none group">
+          <PopoverTrigger className="flex flex-col items-center px-3 sm:px-4 py-1.5 rounded-2xl hover:bg-white hover:shadow-sm transition-all focus:outline-none group">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 group-hover:text-[#42646D]">
               {isToday ? "วันนี้" : selectedDate.format("dddd")}
             </span>
-            <span className="font-extrabold text-[#365058] text-lg leading-none">
+            <span className="font-extrabold text-[#365058] text-base sm:text-lg leading-none">
               {selectedDate.format("D MMM YYYY")}
             </span>
           </PopoverTrigger>
@@ -67,7 +67,7 @@ export function DateNavigator({ selectedDate, onChange }: DateNavigatorProps) {
 
       <button 
         onClick={() => navigate("next")} 
-        className="p-2 hover:bg-white rounded-full text-slate-600 transition-all active:scale-90 disabled:opacity-30 disabled:pointer-events-none"
+        className="p-2.5 sm:p-2 hover:bg-white rounded-full text-slate-600 transition-all active:scale-90 disabled:opacity-30 disabled:pointer-events-none min-w-[44px] min-h-[44px] flex items-center justify-center"
       >
         <ChevronRight className="h-5 w-5 stroke-[2.5]" />
       </button>
